@@ -14,10 +14,11 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: tar -czf node_modules.tar.gz node_modules
       - uses: actions/upload-artifact@v4
         with:
           name: node_modules
-          path: node_modules
+          path: node_modules.tar.gz
           retention-days: 1
 
   typecheck:
@@ -28,7 +29,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: node_modules
-          path: node_modules
+      - run: tar -xzf node_modules.tar.gz
       - run: npm run typecheck
 
   lint:
@@ -39,7 +40,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: node_modules
-          path: node_modules
+      - run: tar -xzf node_modules.tar.gz
       - run: npm run lint
 
   build:
@@ -50,5 +51,5 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: node_modules
-          path: node_modules
+      - run: tar -xzf node_modules.tar.gz
       - run: npm run build
