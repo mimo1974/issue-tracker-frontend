@@ -72,11 +72,10 @@ export function Sidebar({
                 key={priority}
                 type="button"
                 onClick={() => onTogglePriority(priority)}
-                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                  active
-                    ? "border-violet-400/60 bg-violet-500/15 text-violet-300"
-                    : "border-white/15 text-slate-400 hover:border-white/30 hover:text-slate-200"
-                }`}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${active
+                  ? "border-violet-400/60 bg-violet-500/15 text-violet-300"
+                  : "border-white/15 text-slate-400 hover:border-white/30 hover:text-slate-200"
+                  }`}
               >
                 {priorityLabel[priority]}
               </button>
@@ -113,11 +112,10 @@ function NavItem({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors ${
-        active
-          ? "bg-violet-500/15 text-white"
-          : "text-slate-300 hover:bg-white/5 hover:text-white"
-      }`}
+      className={`flex items-center justify-between rounded-md px-2 py-1.5 text-sm transition-colors ${active
+        ? "bg-violet-500/15 text-white"
+        : "text-slate-300 hover:bg-white/5 hover:text-white"
+        }`}
     >
       <span className="flex items-center gap-2 truncate">
         {icon}

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Assignee, Issue, Status } from "../types";
 import { IssueCard } from "./IssueCard";
 
@@ -14,11 +15,43 @@ interface ColumnProps {
   label: string;
   issues: Issue[];
   assigneesById: Map<string, Assignee>;
+  onDropIssue: (issueId: string, status: Status) => void;
+  draggingIssueId: string | null;
+  onDragStartIssue: (issueId: string) => void;
+  onDragEndIssue: () => void;
 }
 
-export function Column({ status, label, issues, assigneesById }: ColumnProps) {
+export function Column({
+  status,
+  label,
+  issues,
+  assigneesById,
+  onDropIssue,
+  draggingIssueId,
+  onDragStartIssue,
+  onDragEndIssue,
+}: ColumnProps) {
+  const [isDragOver, setIsDragOver] = useState(false);
+
   return (
-    <div className="flex w-80 shrink-0 flex-col rounded-lg bg-[#111118]">
+    <div
+      onDragOver={(e) => {
+        if (!draggingIssueId) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        setIsDragOver(true);
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        const issueId = e.dataTransfer.getData("text/plain");
+        if (issueId) onDropIssue(issueId, status);
+      }}
+      className={`flex w-80 shrink-0 flex-col rounded-lg bg-[#111118] transition-colors ${
+        isDragOver ? "ring-2 ring-violet-500/60" : ""
+      }`}
+    >
       <div
         className={`flex items-center justify-between rounded-t-lg border-t-2 bg-white/5 px-3 py-2 ${columnAccent[status]}`}
       >
@@ -35,6 +68,8 @@ export function Column({ status, label, issues, assigneesById }: ColumnProps) {
             key={issue.id}
             issue={issue}
             assignee={assigneesById.get(issue.assigneeId)}
+            onDragStart={onDragStartIssue}
+            onDragEnd={onDragEndIssue}
           />
         ))}
         {issues.length === 0 && (
