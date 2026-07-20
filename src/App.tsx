@@ -2,10 +2,17 @@ import { useMemo, useState } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { BoardHeader } from "./components/BoardHeader";
 import { Column } from "./components/Column";
-import { assignees, issues, projects, statusColumns } from "./data/mockData";
-import type { Priority } from "./types";
+import {
+  assignees,
+  issues as initialIssues,
+  projects,
+  statusColumns,
+} from "./data/mockData";
+import type { Priority, Status } from "./types";
 
 function App() {
+  const [issues, setIssues] = useState(initialIssues);
+  const [draggingIssueId, setDraggingIssueId] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
@@ -45,7 +52,7 @@ function App() {
         return false;
       return true;
     });
-  }, [selectedProjectId, selectedAssigneeIds, selectedPriorities, search]);
+  }, [issues, selectedProjectId, selectedAssigneeIds, selectedPriorities, search]);
 
   function toggleAssignee(assigneeId: string) {
     setSelectedAssigneeIds((prev) => {
@@ -62,6 +69,15 @@ function App() {
       if (next.has(priority)) next.delete(priority);
       else next.add(priority);
       return next;
+    });
+  }
+
+  function moveIssue(issueId: string, status: Status) {
+    setIssues((prev) => {
+
+      return prev.map((issue) =>
+        issue.id === issueId ? { ...issue, status } : issue,
+      )
     });
   }
 
@@ -84,7 +100,7 @@ function App() {
           search={search}
           onSearchChange={setSearch}
           issueCount={filteredIssues.length}
-          onNewIssue={() => {}}
+          onNewIssue={() => { }}
         />
 
         <div className="flex flex-1 gap-4 overflow-x-auto p-4">
@@ -95,6 +111,10 @@ function App() {
               label={column.label}
               issues={filteredIssues.filter((i) => i.status === column.id)}
               assigneesById={assigneesById}
+              onDropIssue={moveIssue}
+              draggingIssueId={draggingIssueId}
+              onDragStartIssue={setDraggingIssueId}
+              onDragEndIssue={() => setDraggingIssueId(null)}
             />
           ))}
         </div>

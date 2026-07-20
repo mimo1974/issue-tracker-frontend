@@ -5,11 +5,27 @@ import { priorityBadgeClass, priorityLabel } from "../lib/priority";
 interface IssueCardProps {
   issue: Issue;
   assignee: Assignee | undefined;
+  onDragStart?: (issueId: string) => void;
+  onDragEnd?: () => void;
 }
 
-export function IssueCard({ issue, assignee }: IssueCardProps) {
+export function IssueCard({
+  issue,
+  assignee,
+  onDragStart,
+  onDragEnd,
+}: IssueCardProps) {
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-white/10 bg-[#15151d] p-3 transition-colors hover:border-white/20">
+    <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("text/plain", issue.id);
+        e.dataTransfer.effectAllowed = "move";
+        onDragStart?.(issue.id);
+      }}
+      onDragEnd={() => onDragEnd?.()}
+      className="flex cursor-grab flex-col gap-2 rounded-lg border border-white/10 bg-[#15151d] p-3 transition-colors hover:border-white/20 active:cursor-grabbing"
+    >
       <div className="flex items-center justify-between">
         <span className="text-xs text-slate-500">{issue.id}</span>
         <span
